@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TQualityMapper">
+    
+    <resultMap type="TQuality" id="TQualityResult">
+        <result property="qualityNo"    column="quality_no"    />
+        <result property="qualityId"    column="quality_id"    />
+        <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectTQualityVo">
+        select quality_no, quality_id, name, type, remark from t_quality
+    </sql>
+
+    <select id="selectTQualityList" parameterType="TQuality" resultMap="TQualityResult">
+        <include refid="selectTQualityVo"/>
+        <where>  
+            <if test="qualityNo != null  and qualityNo != ''"> and quality_no = #{qualityNo}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+        </where>
+    </select>
+    
+    <select id="selectTQualityByQualityId" parameterType="String" resultMap="TQualityResult">
+        <include refid="selectTQualityVo"/>
+        where quality_id = #{qualityId}
+    </select>
+        
+    <insert id="insertTQuality" parameterType="TQuality" useGeneratedKeys="true" keyProperty="qualityId">
+        insert into t_quality
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="qualityNo != null and qualityNo != ''">quality_no,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="remark != null and remark != ''">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="qualityNo != null and qualityNo != ''">#{qualityNo},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTQuality" parameterType="TQuality">
+        update t_quality
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="qualityNo != null and qualityNo != ''">quality_no = #{qualityNo},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+        </trim>
+        where quality_id = #{qualityId}
+    </update>
+
+    <delete id="deleteTQualityByQualityId" parameterType="String">
+        delete from t_quality where quality_id = #{qualityId}
+    </delete>
+
+    <delete id="deleteTQualityByQualityIds" parameterType="String">
+        delete from t_quality where quality_id in 
+        <foreach item="qualityId" collection="array" open="(" separator="," close=")">
+            #{qualityId}
+        </foreach>
+    </delete>
+
+</mapper>

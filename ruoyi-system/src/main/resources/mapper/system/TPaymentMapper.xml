@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TPaymentMapper">
+    
+    <resultMap type="TPayment" id="TPaymentResult">
+        <result property="paymentNo"    column="payment_no"    />
+        <result property="paymentId"    column="payment_id"    />
+        <result property="planName"    column="plan_name"    />
+        <result property="startDate"    column="start_date"    />
+        <result property="designQty"    column="design_qty"    />
+    </resultMap>
+
+    <sql id="selectTPaymentVo">
+        select payment_no, payment_id, plan_name, start_date, design_qty from t_payment
+    </sql>
+
+    <select id="selectTPaymentList" parameterType="TPayment" resultMap="TPaymentResult">
+        <include refid="selectTPaymentVo"/>
+        <where>  
+            <if test="paymentNo != null  and paymentNo != ''"> and payment_no = #{paymentNo}</if>
+            <if test="planName != null  and planName != ''"> and plan_name like concat('%', #{planName}, '%')</if>
+            <if test="startDate != null "> and start_date = #{startDate}</if>
+            <if test="designQty != null "> and design_qty = #{designQty}</if>
+        </where>
+    </select>
+    
+    <select id="selectTPaymentByPaymentId" parameterType="String" resultMap="TPaymentResult">
+        <include refid="selectTPaymentVo"/>
+        where payment_id = #{paymentId}
+    </select>
+        
+    <insert id="insertTPayment" parameterType="TPayment">
+        insert into t_payment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="paymentNo != null and paymentNo != ''">payment_no,</if>
+            <if test="paymentId != null">payment_id,</if>
+            <if test="planName != null and planName != ''">plan_name,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="designQty != null">design_qty,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="paymentNo != null and paymentNo != ''">#{paymentNo},</if>
+            <if test="paymentId != null">#{paymentId},</if>
+            <if test="planName != null and planName != ''">#{planName},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="designQty != null">#{designQty},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTPayment" parameterType="TPayment">
+        update t_payment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="paymentNo != null and paymentNo != ''">payment_no = #{paymentNo},</if>
+            <if test="planName != null and planName != ''">plan_name = #{planName},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="designQty != null">design_qty = #{designQty},</if>
+        </trim>
+        where payment_id = #{paymentId}
+    </update>
+
+    <delete id="deleteTPaymentByPaymentId" parameterType="String">
+        delete from t_payment where payment_id = #{paymentId}
+    </delete>
+
+    <delete id="deleteTPaymentByPaymentIds" parameterType="String">
+        delete from t_payment where payment_id in 
+        <foreach item="paymentId" collection="array" open="(" separator="," close=")">
+            #{paymentId}
+        </foreach>
+    </delete>
+
+</mapper>

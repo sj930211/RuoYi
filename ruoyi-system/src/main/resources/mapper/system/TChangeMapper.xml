@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TChangeMapper">
+    
+    <resultMap type="TChange" id="TChangeResult">
+        <result property="changeId"    column="change_id"    />
+        <result property="project"    column="project"    />
+        <result property="applyTime"    column="apply_time"    />
+        <result property="applyUnit"    column="apply_unit"    />
+        <result property="manager"    column="manager"    />
+    </resultMap>
+
+    <sql id="selectTChangeVo">
+        select change_id, project, apply_time, apply_unit, manager from t_change
+    </sql>
+
+    <select id="selectTChangeList" parameterType="TChange" resultMap="TChangeResult">
+        <include refid="selectTChangeVo"/>
+        <where>  
+            <if test="project != null  and project != ''"> and project = #{project}</if>
+            <if test="applyTime != null "> and apply_time = #{applyTime}</if>
+            <if test="applyUnit != null  and applyUnit != ''"> and apply_unit = #{applyUnit}</if>
+            <if test="manager != null  and manager != ''"> and manager = #{manager}</if>
+        </where>
+    </select>
+    
+    <select id="selectTChangeByChangeId" parameterType="String" resultMap="TChangeResult">
+        <include refid="selectTChangeVo"/>
+        where change_id = #{changeId}
+    </select>
+        
+    <insert id="insertTChange" parameterType="TChange" useGeneratedKeys="true" keyProperty="changeId">
+        insert into t_change
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="project != null and project != ''">project,</if>
+            <if test="applyTime != null">apply_time,</if>
+            <if test="applyUnit != null and applyUnit != ''">apply_unit,</if>
+            <if test="manager != null and manager != ''">manager,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="project != null and project != ''">#{project},</if>
+            <if test="applyTime != null">#{applyTime},</if>
+            <if test="applyUnit != null and applyUnit != ''">#{applyUnit},</if>
+            <if test="manager != null and manager != ''">#{manager},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTChange" parameterType="TChange">
+        update t_change
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="project != null and project != ''">project = #{project},</if>
+            <if test="applyTime != null">apply_time = #{applyTime},</if>
+            <if test="applyUnit != null and applyUnit != ''">apply_unit = #{applyUnit},</if>
+            <if test="manager != null and manager != ''">manager = #{manager},</if>
+        </trim>
+        where change_id = #{changeId}
+    </update>
+
+    <delete id="deleteTChangeByChangeId" parameterType="String">
+        delete from t_change where change_id = #{changeId}
+    </delete>
+
+    <delete id="deleteTChangeByChangeIds" parameterType="String">
+        delete from t_change where change_id in 
+        <foreach item="changeId" collection="array" open="(" separator="," close=")">
+            #{changeId}
+        </foreach>
+    </delete>
+
+</mapper>

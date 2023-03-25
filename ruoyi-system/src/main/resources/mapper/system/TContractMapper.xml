@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.TContractMapper">
+    
+    <resultMap type="TContract" id="TContractResult">
+        <result property="contractId"    column="contract_id"    />
+        <result property="contractNo"    column="contract_no"    />
+        <result property="type"    column="type"    />
+        <result property="name"    column="name"    />
+        <result property="signDate"    column="sign_date"    />
+    </resultMap>
+
+    <sql id="selectTContractVo">
+        select contract_id, contract_no, type, name, sign_date from t_contract
+    </sql>
+
+    <select id="selectTContractList" parameterType="TContract" resultMap="TContractResult">
+        <include refid="selectTContractVo"/>
+        <where>  
+            <if test="contractNo != null  and contractNo != ''"> and contract_no = #{contractNo}</if>
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="signDate != null "> and sign_date = #{signDate}</if>
+        </where>
+    </select>
+    
+    <select id="selectTContractByContractId" parameterType="String" resultMap="TContractResult">
+        <include refid="selectTContractVo"/>
+        where contract_id = #{contractId}
+    </select>
+        
+    <insert id="insertTContract" parameterType="TContract" useGeneratedKeys="true" keyProperty="contractId">
+        insert into t_contract
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="contractNo != null and contractNo != ''">contract_no,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="signDate != null">sign_date,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="contractNo != null and contractNo != ''">#{contractNo},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="signDate != null">#{signDate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTContract" parameterType="TContract">
+        update t_contract
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="contractNo != null and contractNo != ''">contract_no = #{contractNo},</if>
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="signDate != null">sign_date = #{signDate},</if>
+        </trim>
+        where contract_id = #{contractId}
+    </update>
+
+    <delete id="deleteTContractByContractId" parameterType="String">
+        delete from t_contract where contract_id = #{contractId}
+    </delete>
+
+    <delete id="deleteTContractByContractIds" parameterType="String">
+        delete from t_contract where contract_id in 
+        <foreach item="contractId" collection="array" open="(" separator="," close=")">
+            #{contractId}
+        </foreach>
+    </delete>
+
+</mapper>
